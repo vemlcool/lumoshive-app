@@ -1,6 +1,10 @@
 package middleware
 
-import "net/http"
+import (
+	"encoding/json"
+	"myproject/respond"
+	"net/http"
+)
 
 var (
 	USERNAME = "admin"
@@ -14,7 +18,18 @@ func MiddlewareBasicAuth(next http.Handler) http.Handler {
 
 		if !ok {
 			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Error Unauthorized"))
+			response := respond.ErrorAuth{
+				Message:    "Gagal autentikasi",
+				StatusCode: 401,
+				Error: struct {
+					Detail string `json:"detail"`
+				}{
+					Detail: "Kredensial tidak valid atau tidak ada token akses",
+				},
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized) // Status Code 401
+			json.NewEncoder(w).Encode(response)
 			return
 		}
 

@@ -6,6 +6,7 @@ import (
 	"log"
 	"myproject/database"
 	"myproject/model"
+	"myproject/respond"
 	"net/http"
 )
 
@@ -91,6 +92,12 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	db.Delete(&model.User{}, id)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("user deleted"))
+	response := respond.RespDeleteSuccess{
+		Message:    "Data berhasil dihapus",
+		StatusCode: 200,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusUnauthorized)
+	json.NewEncoder(w).Encode(response)
 
 }
